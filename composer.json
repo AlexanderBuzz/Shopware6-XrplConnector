@@ -1,5 +1,5 @@
 {
-    "name": "gndlf/sample-plugin",
+    "name": "hardcastle/ledger-direct-sw6",
     "description": "Shopware 6 XRPL Connector",
     "type": "shopware-platform-plugin",
     "license": "ISC",
@@ -12,10 +12,11 @@
         }
     },
     "require": {
-        "php": ">= 8.1"
+        "php": ">= 8.1",
+        "hardcastle/xrpl_php": "dev-master"
     },
     "require-dev": {
-        "phpunit/phpunit": "~8.3.4",
+        "phpunit/phpunit": "^9",
         "phpstan/phpstan": "^0.12.18",
         "shopware/core": "*",
         "shopware/storefront": "*"
