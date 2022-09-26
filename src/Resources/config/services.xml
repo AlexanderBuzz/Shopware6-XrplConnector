@@ -6,8 +6,32 @@
 
     <services>
 
+        <!-- deprecated -->
         <service id="XrplConnector\Subscriber\Storefront\Subscriber" class="XrplConnector\Subscriber\Storefront\Subscriber">
             <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <!-- Commands -->
+        <service id="XrplConnector\Command\XrplPriceLookupCommand">
+            <argument type="service" id="XrplConnector\Provider\XrpPriceProvider" />
+        </service>
+
+        <service id="XrplConnector\Command\XrplTransactionLookupCommand">
+            <argument type="service" id="XrplConnector\Provider\XrplTransactionProvider" />
+        </service>
+
+        <!-- Controllers -->
+        <service id="XrplConnector\Storefront\Controller\XrpPriceAggregator" public="true">
+
+        </service>
+
+        <!-- Providers -->
+        <service id="XrplConnector\Provider\XrpPriceProvider">
+            <tag name="service" id="shopware.app_system.guzzle"/>
+        </service>
+
+        <service id="XrplConnector\Provider\XrplTransactionProvider">
+            <tag name="service" id="shopware.app_system.guzzle"/>
         </service>
         
     </services>
