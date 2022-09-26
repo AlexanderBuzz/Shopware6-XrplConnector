@@ -14,11 +14,14 @@
         <!-- Commands -->
         <service id="XrplConnector\Command\XrplTransactionLookupCommand">
             <argument type="service" id="XrplConnector\Provider\XrplTransactionProvider" />
+            <argument type="service" id="XrplConnector\Service\XrplTransactionSyncService"/>
+
             <tag name="console.command"/>
         </service>
 
         <service id="XrplConnector\Command\XrpPriceLookupCommand">
             <argument type="service" id="XrplConnector\Provider\XrpPriceProvider" />
+
             <tag name="console.command"/>
         </service>
 
@@ -35,6 +38,12 @@
         <service id="XrplConnector\Provider\XrplTransactionProvider">
             <argument type="service" id="shopware.app_system.guzzle"/>
         </service>
+
+        <!-- Servvices -->
+        <service id="XrplConnector\Service\XrplTransactionSyncService">
+
+        </service>
+
         
     </services>
 </container>

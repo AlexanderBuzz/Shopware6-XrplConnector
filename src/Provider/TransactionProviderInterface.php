@@ -4,5 +4,5 @@ namespace XrplConnector\Provider;
 
 interface TransactionProviderInterface
 {
-    public function getTransaction(): array;
+    public function getTransaction(string $transactionId): array;
 }
