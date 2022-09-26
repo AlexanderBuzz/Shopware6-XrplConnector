@@ -31,6 +31,8 @@ class XrpPriceLookupCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $output->writeln('test');
 
+        return Command::SUCCESS;
     }
 }
