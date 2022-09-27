@@ -15,6 +15,7 @@
         <service id="XrplConnector\Command\XrplTransactionLookupCommand">
             <argument type="service" id="XrplConnector\Provider\XrplTransactionProvider" />
             <argument type="service" id="XrplConnector\Service\XrplTransactionSyncService"/>
+            <argument type="service" id="XrplConnector\Service\XrplTransactionFileService"/>
 
             <tag name="console.command"/>
         </service>
@@ -42,6 +43,10 @@
         <!-- Servvices -->
         <service id="XrplConnector\Service\XrplTransactionSyncService">
 
+        </service>
+
+        <service id="XrplConnector\Service\XrplTransactionFileService">
+            <argument>%kernel.project_dir%/files</argument>
         </service>
 
         

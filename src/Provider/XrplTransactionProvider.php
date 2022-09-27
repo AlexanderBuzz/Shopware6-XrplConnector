@@ -36,21 +36,20 @@ class XrplTransactionProvider implements TransactionProviderInterface
         return json_decode((string)$res->getBody(), true);
     }
 
-    public function getAccountTransaction(string $account): array
+    public function getAccountTransaction(string $account): string
     {
         $body = $this->createRequestBody('account_tx', [
             "account" => $account,
             "ledger_index_min" => -1,
             "ledger_index_max" => -1,
             "binary" => false,
-            "limit" => 2,
             "forward"=> false
         ]);
 
         //TODO: Async
         $res = $this->client->request('POST', $this->endpoint, $body);
 
-        return json_decode((string)$res->getBody(), true);
+        return (string)$res->getBody();
     }
 
     public function getTransaction(string $transactionId): array

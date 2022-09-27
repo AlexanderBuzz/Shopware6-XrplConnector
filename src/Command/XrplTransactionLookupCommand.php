@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use XrplConnector\Provider\TransactionProviderInterface;
+use XrplConnector\Service\XrplTransactionFileService;
 use XrplConnector\Service\XrplTransactionSyncService;
 
 class XrplTransactionLookupCommand extends Command
@@ -17,14 +18,18 @@ class XrplTransactionLookupCommand extends Command
 
     protected XrplTransactionSyncService $syncService;
 
+    protected XrplTransactionFileService $fileService;
+
     public function __construct(
         TransactionProviderInterface $transactionFinder,
-        XrplTransactionSyncService $syncService
+        XrplTransactionSyncService $syncService,
+        XrplTransactionFileService $fileService
     ) {
         parent::__construct();
 
         $this->transactionFinder = $transactionFinder;
         $this->syncService = $syncService;
+        $this->fileService = $fileService;
     }
 
     public function configure()
@@ -42,8 +47,8 @@ class XrplTransactionLookupCommand extends Command
 
         $res = $this->transactionFinder->getAccountTransaction('rwif7LDjdrRVUUPeeeY3FPNWHn1JPWyKkv');
 
-        $this->syncService->handleAccountTransactionResult($res);
-        //$output->writeln(print_r($res, true));
+        //$this->syncService->handleAccountTransactionResult(json_decode($res, true));
+        $this->fileService->saveAccountTxResult($res);
 
         return Command::SUCCESS;
     }
