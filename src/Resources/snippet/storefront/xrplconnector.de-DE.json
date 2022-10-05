@@ -1,0 +1,11 @@
+{
+  "XrplConnector": {
+    "errors": {
+    },
+    "confirm": {
+      "payment": {
+        "changeXrpPaymentMethod": "XRP Zahlungsart ändern"
+      }
+    }
+  }
+}

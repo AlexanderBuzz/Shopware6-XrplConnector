@@ -31,6 +31,14 @@
 
         </service>
 
+        <!-- Payment Handlers -->
+
+        <service id="XrplConnector\Components\PaymentHandler\XrpPaymentHandler">
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+
+            <tag name="shopware.payment.method.sync"/>
+        </service>
+
         <!-- Providers -->
         <service id="XrplConnector\Provider\XrpPriceProvider">
             <argument type="service" id="shopware.app_system.guzzle"/>
