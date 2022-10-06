@@ -4,5 +4,5 @@ namespace XrplConnector\Provider;
 
 interface CryptoPriceProviderInterface
 {
-    public function getCurrentPrice(): array;
+    public function getCurrentPrice(): float;
 }

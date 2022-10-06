@@ -30,9 +30,6 @@ class XrplTransactionProvider implements TransactionProviderInterface
         //TODO: Async
         $res = $this->client->request('POST', $this->endpoint, $body);
 
-        //print_r($res->getStatusCode());
-        //print_r((string)$res->getBody());
-
         return json_decode((string)$res->getBody(), true);
     }
 

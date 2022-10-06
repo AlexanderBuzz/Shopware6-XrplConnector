@@ -31,7 +31,8 @@ class XrpPriceLookupCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln('test');
+        $currentPrice = $this->priceFinder->getCurrentPrice();
+        $output->writeln('Current XRP price: ' . $currentPrice);
 
         return Command::SUCCESS;
     }

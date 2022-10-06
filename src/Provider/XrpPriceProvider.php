@@ -6,7 +6,7 @@ use GuzzleHttp\Client;
 
 class XrpPriceProvider implements CryptoPriceProviderInterface
 {
-    const ASSET = 'XRP';
+    const SYMBOL = 'XRPUSDT';
 
     private Client $client;
 
@@ -15,10 +15,15 @@ class XrpPriceProvider implements CryptoPriceProviderInterface
         $this->client = $client;
     }
 
-    public function getCurrentPrice(): array
+    public function getCurrentPrice(): float
     {
-        // TODO: Implement getCurrentPrice() method.
+        $response = $this->client->get('https://api.binance.com/api/v1/ticker/price?symbol=' . self::SYMBOL);
+        $data = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
-        return [];
+        if (array_key_exists('price', $data)) {
+            return (float) $data['price'];
+        }
+
+        return 0.00;
     }
 }
