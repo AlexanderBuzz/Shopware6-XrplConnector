@@ -31,12 +31,20 @@
 
         </service>
 
-        <!-- Payment Handlers -->
+        <service id="XrplConnector\Storefront\Controller\XrpPaymentController" public="true">
+            <argument type="service" id="order.repository"/>
 
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
+        </service>
+
+        <!-- Payment Handlers -->
         <service id="XrplConnector\Components\PaymentHandler\XrpPaymentHandler">
+            <argument type="service" id="router"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
 
-            <tag name="shopware.payment.method.sync"/>
+            <tag name="shopware.payment.method.async"/>
         </service>
 
         <!-- Providers -->
@@ -48,7 +56,7 @@
             <argument type="service" id="shopware.app_system.guzzle"/>
         </service>
 
-        <!-- Servvices -->
+        <!-- Services -->
         <service id="XrplConnector\Service\XrplTransactionSyncService">
 
         </service>

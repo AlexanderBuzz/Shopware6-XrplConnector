@@ -9,12 +9,19 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\RouterInterface;
 
 class XrpPaymentHandler implements AsynchronousPaymentHandlerInterface
 {
+    private RouterInterface $router;
+
+    private OrderTransactionStateHandler $transactionStateHandler;
+
     public function __construct(
+        RouterInterface $router,
         OrderTransactionStateHandler $orderTransactionStateHandler
     ) {
+        $this->router = $router;
         $this->transactionStateHandler = $orderTransactionStateHandler;
     }
 
@@ -22,26 +29,23 @@ class XrpPaymentHandler implements AsynchronousPaymentHandlerInterface
     {
         $transactionId = $transaction->getOrderTransaction()->getId();
 
-        /* 5.6
-         * $payment = $this->Request()->getPost('payment'); "5"
-         *
-         * Shopware()->Modules()->Admin()->sSYSTEM->_POST['sPayment'] = $payment;
-         *
-         *         if ($checkData['sPaymentObject'] instanceof \ShopwarePlugin\PaymentMethods\Components\BasePaymentMethod) {
-            $checkData['sPaymentObject']->savePaymentData(Shopware()->Session()->sUserId, $this->Request());
-        }
-
-                $this->redirect([
-            'controller' => $this->Request()->getParam('sTarget', 'checkout'),
-            'action' => $this->Request()->getParam('sTargetAction', 'confirm'),
+        $redirectUrl = $this->router->generate('frontend.checkout.xrpl-connector.payment', [
+            'orderId' => $transaction->getOrder()->getId(),
+            'returnUrl' => $transaction->getReturnUrl()
         ]);
-         */
-
-
+        return new RedirectResponse($redirectUrl);
     }
 
     public function finalize(AsyncPaymentTransactionStruct $transaction, Request $request, SalesChannelContext $salesChannelContext): void
     {
-        // TODO: Implement finalize() method.
+        $paymentState = $request->query->getAlpha('status');
+        $context = $salesChannelContext->getContext();
+        if ($paymentState === 'completed') {
+            // Payment completed, set transaction status to "paid"
+            $this->transactionStateHandler->paid($transaction->getOrderTransaction()->getId(), $context);
+        } else {
+            // Payment not completed, set transaction status to "open"
+            $this->transactionStateHandler->reopen($transaction->getOrderTransaction()->getId(), $context);
+        }
     }
 }
