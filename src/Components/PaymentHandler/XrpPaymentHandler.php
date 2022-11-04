@@ -27,7 +27,8 @@ class XrpPaymentHandler implements AsynchronousPaymentHandlerInterface
 
     public function pay(AsyncPaymentTransactionStruct $transaction, RequestDataBag $dataBag, SalesChannelContext $salesChannelContext): RedirectResponse
     {
-        $transactionId = $transaction->getOrderTransaction()->getId();
+        $orderTransaction = $transaction->getOrderTransaction();
+        $order = $transaction->getOrder();
 
         $redirectUrl = $this->router->generate('frontend.checkout.xrpl-connector.payment', [
             'orderId' => $transaction->getOrder()->getId(),

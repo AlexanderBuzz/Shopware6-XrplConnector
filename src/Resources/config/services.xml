@@ -32,6 +32,7 @@
         </service>
 
         <service id="XrplConnector\Storefront\Controller\XrpPaymentController" public="true">
+            <argument type="service" id="XrplConnector\Provider\XrpPriceProvider" />
             <argument type="service" id="order.repository"/>
 
             <call method="setContainer">
@@ -50,6 +51,8 @@
         <!-- Providers -->
         <service id="XrplConnector\Provider\XrpPriceProvider">
             <argument type="service" id="shopware.app_system.guzzle"/>
+            <argument type="service" id="order.repository" />
+            <argument type="service" id="currency.repository" />
         </service>
 
         <service id="XrplConnector\Provider\XrplTransactionProvider">
