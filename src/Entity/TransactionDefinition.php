@@ -9,6 +9,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\FloatField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\LongTextField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
@@ -20,7 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 class TransactionDefinition extends EntityDefinition
 {
 
-    public const ENTITY_NAME = 'saferpaysw6_transaction';
+    public const ENTITY_NAME = 'xrpl_transaction';
 
     public function getEntityName(): string
     {
@@ -36,7 +37,10 @@ class TransactionDefinition extends EntityDefinition
             (new ReferenceVersionField(OrderDefinition::class))->addFlags(new PrimaryKey(), new Required()),
             new OneToOneAssociationField('order', 'order_id', 'id', OrderDefinition::class, false),
 
+            (new StringField('xrpl_invoice_id', 'xrplInvoiceId')),
             (new StringField('xrpl_transaction_id', 'xrplTransactionId')),
+            (new FloatField('xrp_amount', 'xrplTransactionId')),
+            (new DateTimeField('expiration_date', 'expirationDate')),
 
             new CreatedAtField(),
             new UpdatedAtField(),

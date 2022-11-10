@@ -8,7 +8,7 @@ class XrplTransactionProvider implements TransactionProviderInterface
 {
     private Client $client;
 
-    private const TESTNET_URI = 'http://xls20-sandbox.rippletest.net:51234';
+    private const TESTNET_URI = 'https://s.altnet.rippletest.net:51234';
 
     private string $endpoint;
 

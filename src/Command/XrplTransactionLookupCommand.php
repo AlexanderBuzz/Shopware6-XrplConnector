@@ -45,7 +45,7 @@ class XrplTransactionLookupCommand extends Command
         //Standby Account: 'rMKBvkKGvbUVSTrULGWhY32fVvq88pZDLp'
         //OperationalAccount: 'rwif7LDjdrRVUUPeeeY3FPNWHn1JPWyKkv'
 
-        $res = $this->transactionFinder->getAccountTransaction('rwif7LDjdrRVUUPeeeY3FPNWHn1JPWyKkv');
+        $res = $this->transactionFinder->getAccountTransaction('rGYrnA9UCg5KSMi6tUkxa4rtAFzbfo8J4Y');
 
         //$this->syncService->handleAccountTransactionResult(json_decode($res, true));
         $this->fileService->saveAccountTxResult($res);
