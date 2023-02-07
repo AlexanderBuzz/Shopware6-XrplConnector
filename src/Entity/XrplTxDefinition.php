@@ -18,9 +18,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\UpdatedAtField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
-class TransactionDefinition extends EntityDefinition
+class XrplTxDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'xrpl_transaction';
+    public const ENTITY_NAME = 'xrpl_tx';
 
     public function getEntityName(): string
     {
@@ -32,29 +32,24 @@ class TransactionDefinition extends EntityDefinition
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),
 
-            (new FkField('order_id', 'orderId', OrderDefinition::class))->addFlags(new PrimaryKey(), new Required()),
-            (new ReferenceVersionField(OrderDefinition::class))->addFlags(new PrimaryKey(), new Required()),
-            new OneToOneAssociationField('order', 'order_id', 'id', OrderDefinition::class, false),
+            (new StringField('server', 'server')),
+            (new StringField('hash', 'hash')),
+            (new StringField('destination', 'destination')),
+            (new StringField('account', 'account')),
+            (new StringField('raw', 'raw')),
+            (new StringField('ledger_index', 'ledgerIndex')),
 
-            (new StringField('xrpl_invoice_id', 'xrplInvoiceId')),
-            (new StringField('xrpl_transaction_id', 'xrplTransactionId')),
-            (new FloatField('xrp_amount', 'xrplTransactionId')),
-            (new DateTimeField('expiration_date', 'expirationDate')),
-
-            new CreatedAtField(),
-            new UpdatedAtField(),
-
-            new OneToOneAssociationField('order', 'order_id', 'id', OrderDefinition::class, false)
+            new CreatedAtField()
         ]);
     }
 
     public function getEntityClass(): string
     {
-        return TransactionEntity::class;
+        return XrplTxEntity::class;
     }
 
     public function getCollectionClass(): string
     {
-        return TransactionCollection::class;
+        return XrplTxCollection::class;
     }
 }

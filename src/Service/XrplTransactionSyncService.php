@@ -2,18 +2,33 @@
 
 namespace XrplConnector\Service;
 
+use Doctrine\DBAL\Connection;
+use GuzzleHttp\Promise\PromiseInterface;
+use XRPL_PHP\Client\JsonRpcClient;
+
 class XrplTransactionSyncService
 {
-    public function __construct()
-    {
+    private JsonRpcClient $client;
 
+    private Connection $connection;
+
+    public function __construct(
+        JsonRpcClient $client,
+        Connection $connection
+    ) {
+        $this->client = $client;
+        $this->connection = $connection;
     }
 
-    public function getLastSyncedLedgerIndex(): string
+    public function getLastSyncedLedgerIndex(string $account): string
     {
-        //TODO: implement function
-        //get last ledger index from db
-        //to fetch and sync all following ledgers
+        $qb = $this->connection->createQueryBuilder();
+        $qb->select('MAX(ledger_index)')
+            ->from('xrpl_tx')
+            ->where('destination = ?')
+            ->setParameter(0, $account)
+        ;
+
     }
 
     /* Example tx, see https://xrpl.org/tx.html
@@ -42,5 +57,10 @@ class XrplTransactionSyncService
             //TODO: This output needs to be synced to the database
             print_r($tx);
         }
+    }
+
+    private function fetch(): PromiseInterface
+    {
+
     }
 }

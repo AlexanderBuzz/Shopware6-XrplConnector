@@ -26,6 +26,13 @@
             <tag name="console.command"/>
         </service>
 
+        <service id="XrplConnector\Command\XrplTransactionSyncCommand">
+            <argument type="service" id="XrplConnector\Service\XrplTransactionSyncService"/>
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+
+            <tag name="console.command"/>
+        </service>
+
         <!-- Controllers -->
         <service id="XrplConnector\Storefront\Controller\XrpPriceAggregator" public="true">
 
@@ -61,7 +68,8 @@
 
         <!-- Services -->
         <service id="XrplConnector\Service\XrplTransactionSyncService">
-
+            <argument type="service" id="XRPL_PHP\Client\JsonRpcClient"/>
+            <argument type="service" id="Doctrine\DBAL\Connection" />
         </service>
 
         <service id="XrplConnector\Service\XrplTransactionFileService">

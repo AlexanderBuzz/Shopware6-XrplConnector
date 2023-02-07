@@ -1,10 +1,14 @@
 # XrplConnector Plugin [WIP]
 
-Plugin to make XRP payments in Shopware 6
+XRPL plugin. Enables Shopware6 to receive payments in XRP, IOUs and all sorts of fungible and non-fungible tokens
 
-## Prerequisites - TBD
+## Prerequisites
+- Shopware6 v6.4.x
+- gmp PHP extension present (for the time being)
 
-## Installation - TDB
+## Installation
+
+
 
 ## Console Commands
 
