@@ -13,11 +13,11 @@ class XrplTransactionSyncService
     private Connection $connection;
 
     public function __construct(
-        JsonRpcClient $client,
         Connection $connection
     ) {
-        $this->client = $client;
         $this->connection = $connection;
+
+        $this->_initClient();
     }
 
     public function getLastSyncedLedgerIndex(string $account): string
@@ -62,5 +62,11 @@ class XrplTransactionSyncService
     private function fetch(): PromiseInterface
     {
 
+    }
+
+    private function _initClient()
+    {
+        $net = 'https://s.altnet.rippletest.net:51234'; // TODO: Pull from const, switch config
+        $this->client = new JsonRpcClient($net);
     }
 }

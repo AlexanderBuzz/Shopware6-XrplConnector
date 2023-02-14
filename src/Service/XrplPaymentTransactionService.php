@@ -3,7 +3,6 @@
 namespace XrplConnector\Service;
 
 use DateTime;
-use SaferPaySw6\Entity\TransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -11,6 +10,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
+use XrplConnector\Entity\XrplTxEntity;
 
 class XrplPaymentTransactionService
 {
@@ -22,7 +22,7 @@ class XrplPaymentTransactionService
         $this->transactionRepository = $transactionRepository;
     }
 
-    public function findTransaction(string $xrplInvoiceId, Context $context): TransactionEntity
+    public function findTransaction(string $xrplInvoiceId, Context $context): XrplTxEntity
     {
         $transactionCriteria = (new Criteria())->addFilter(new EqualsFilter('xrplInvoiceId', $xrplInvoiceId));
         $transactionResult = $this->transactionRepository->search($transactionCriteria, $context);

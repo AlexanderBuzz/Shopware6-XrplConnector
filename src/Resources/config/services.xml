@@ -4,6 +4,10 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
+    <imports>
+        <import resource="./entities.xml"/>
+    </imports>
+
     <services>
 
         <!-- deprecated -->
@@ -51,6 +55,7 @@
         <service id="XrplConnector\Components\PaymentHandler\XrpPaymentHandler">
             <argument type="service" id="router"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="XrplConnector\Service\XrplPaymentTransactionService"/>
 
             <tag name="shopware.payment.method.async"/>
         </service>
@@ -67,8 +72,11 @@
         </service>
 
         <!-- Services -->
+        <service id="XrplConnector\Service\XrplPaymentTransactionService">
+            <argument type="service" id="xrpl_transaction.repository" />
+        </service>
+
         <service id="XrplConnector\Service\XrplTransactionSyncService">
-            <argument type="service" id="XRPL_PHP\Client\JsonRpcClient"/>
             <argument type="service" id="Doctrine\DBAL\Connection" />
         </service>
 

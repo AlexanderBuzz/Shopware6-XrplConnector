@@ -39,12 +39,12 @@ class PaymentMethodInstaller
     ];
 
 
-    private PaymentMethodRepositoryDecorator $paymentMethodRepository;
+    private EntityRepository $paymentMethodRepository;
 
     private PluginIdProvider $pluginIdProvider;
 
     public function __construct(
-        PaymentMethodRepositoryDecorator $paymentMethodRepository,
+        EntityRepository $paymentMethodRepository,
         PluginIdProvider $pluginIdProvider
     ) {
         $this->paymentMethodRepository = $paymentMethodRepository;

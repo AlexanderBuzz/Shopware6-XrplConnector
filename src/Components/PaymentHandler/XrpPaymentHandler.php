@@ -2,7 +2,6 @@
 
 namespace XrplConnector\Components\PaymentHandler;
 
-use SaferPaySw6\Service\TransactionService;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
@@ -11,6 +10,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
+use XrplConnector\Service\XrplPaymentTransactionService;
 
 class XrpPaymentHandler implements AsynchronousPaymentHandlerInterface
 {
@@ -18,12 +18,12 @@ class XrpPaymentHandler implements AsynchronousPaymentHandlerInterface
 
     private OrderTransactionStateHandler $transactionStateHandler;
 
-    private TransactionService $transactionService;
+    private XrplPaymentTransactionService $transactionService;
 
     public function __construct(
         RouterInterface $router,
         OrderTransactionStateHandler $orderTransactionStateHandler,
-        TransactionService $transactionService
+        XrplPaymentTransactionService $transactionService
     ) {
         $this->router = $router;
         $this->transactionStateHandler = $orderTransactionStateHandler;

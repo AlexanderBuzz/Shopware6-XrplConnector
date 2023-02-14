@@ -22,7 +22,7 @@ class Migration1669402944XrplTx extends MigrationStep
                 `destination`   VARCHAR(35) NOT NULL,
                 `account`       VARCHAR(35) NOT NULL,
                 `raw`           TEXT NOT NULL,
-                `ledger_index`  VARCHAR(64) NOT NULL,
+                `ledger_index`  VARCHAR(64) NOT NULL
             )
         ');
     }
