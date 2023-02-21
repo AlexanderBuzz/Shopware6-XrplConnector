@@ -2,17 +2,6 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
     <card>
-        <title>XrplConnector - General Settings</title>
-        <title lang="de-DE">XrplConnector - Allgemeine Einstellungen</title>
-
-        <input-field type="bool">
-            <name>active</name>
-            <label>Active</label>
-            <label lang="de-DE">Aktiviert</label>
-        </input-field>
-    </card>
-
-    <card>
         <title>XrplConnector - Testnet Account</title>
         <title lang="de-DE">XrplConnector - Testnet Account</title>
 
@@ -22,12 +11,8 @@
             <label lang="de-DE">Account</label>
         </input-field>
 
-        <input-field>
-            <name>testnetDestinationTag</name>
-            <label>Destination Tag</label>
-            <label lang="de-DE">Destination Tag</label>
-        </input-field>
     </card>
+
     <card>
         <title>XrplConnector - Mainnet Account</title>
         <title lang="de-DE">XrplConnector - Mainnet Account</title>
@@ -38,11 +23,6 @@
             <label lang="de-DE">Account</label>
         </input-field>
 
-        <input-field>
-            <name>mainnetDestinationTag</name>
-            <label>Destination Tag</label>
-            <label lang="de-DE">Destination Tag</label>
-        </input-field>
     </card>
 
 </config>

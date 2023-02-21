@@ -1,23 +1,39 @@
 {% sw_extends '@Storefront/storefront/base.html.twig' %}
 
 {% block base_body_inner %}
-    <div class="bg-white border p-3">
+    <div class="bg-white border p-3" data-xrp-payment="true">
         <strong class="text-center d-block border-bottom pb-2 mb-3">Pay now</strong>
         Send your payment of <strong>{{ xrpAmount|round(6) }} XRP</strong> to the following address:<br/>
         <br/>
         <div class="text-center p-3">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=raKXrkYfbh4Uzqc481jTXbaKsWnW5XRMjp"/>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={{ destinationAccount }}"/>
         </div>
+        Receiving Account:
         <input type="text" class="form-control d-block" style="min-width: 560px;" readonly="readonly"
-               value="raKXrkYfbh4Uzqc481jTXbaKsWnW5XRMjp"/><br/>
-        With note:
+               value="{{ destinationAccount }}"/><br/>
+        Destination Tag:
         <input type="text" class="form-control d-block" style="min-width: 560px;" readonly="readonly"
-               value="{{ orderNumber }}"/><br/>
+               value="{{ destinationTag }}"/><br/>
         <br/>
+
+        <div style="display: none">
+            OrderNumber: {{ orderNumber }} <br/>
+            OrderId: {{ orderId }}
+            RedirectUrl: {{ redirectUrl }}
+        </div>
+
         {% if showNoTransactionFoundError %}
-            No transaction found yet. Try again in a few seconds!
+            No transaction found yet. Try again in a few seconds! <br />
         {% endif %}
+
+        <button type="submit" class="btn btn-success float-left"
+                id="check-payment-button"
+                data-order-id="{{ orderId }}">
+            chck
+        </button>
+
         <form method="POST">
+            <input type="hidden" name="orderId" value="{{ orderId }}" />
             <input type="hidden" name="check" value="1" />
             {{ sw_csrf('frontend.checkout.xrpl-connector.payment') }}
             <button type="submit" class="btn btn-success float-right">

@@ -4,21 +4,11 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <imports>
-        <import resource="./entities.xml"/>
-    </imports>
-
     <services>
-
-        <!-- deprecated -->
-        <service id="XrplConnector\Subscriber\Storefront\Subscriber" class="XrplConnector\Subscriber\Storefront\Subscriber">
-            <tag name="kernel.event_subscriber"/>
-        </service>
 
         <!-- Commands -->
         <service id="XrplConnector\Command\XrplTransactionLookupCommand">
-            <argument type="service" id="XrplConnector\Provider\XrplTransactionProvider" />
-            <argument type="service" id="XrplConnector\Service\XrplTransactionSyncService"/>
+            <argument type="service" id="XrplConnector\Service\XrplTxService"/>
             <argument type="service" id="XrplConnector\Service\XrplTransactionFileService"/>
 
             <tag name="console.command"/>
@@ -31,7 +21,15 @@
         </service>
 
         <service id="XrplConnector\Command\XrplTransactionSyncCommand">
-            <argument type="service" id="XrplConnector\Service\XrplTransactionSyncService"/>
+            <argument type="service" id="XrplConnector\Service\XrplTxService"/>
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+
+            <tag name="console.command"/>
+        </service>
+
+        <service id="XrplConnector\Command\XrplDatabaseTestCommand">
+            <argument type="service" id="XrplConnector\Service\XrplClientService"/>
+            <argument type="service" id="XrplConnector\Service\XrplTxService"/>
             <argument type="service" id="Doctrine\DBAL\Connection" />
 
             <tag name="console.command"/>
@@ -44,7 +42,7 @@
 
         <service id="XrplConnector\Storefront\Controller\XrpPaymentController" public="true">
             <argument type="service" id="XrplConnector\Provider\XrpPriceProvider" />
-            <argument type="service" id="order.repository"/>
+            <argument type="service" id="XrplConnector\Service\OrderTransactionService" />
 
             <call method="setContainer">
                 <argument type="service" id="service_container" />
@@ -55,7 +53,8 @@
         <service id="XrplConnector\Components\PaymentHandler\XrpPaymentHandler">
             <argument type="service" id="router"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
-            <argument type="service" id="XrplConnector\Service\XrplPaymentTransactionService"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="XrplConnector\Provider\XrpPriceProvider" />
 
             <tag name="shopware.payment.method.async"/>
         </service>
@@ -67,16 +66,15 @@
             <argument type="service" id="currency.repository" />
         </service>
 
-        <service id="XrplConnector\Provider\XrplTransactionProvider">
-            <argument type="service" id="shopware.app_system.guzzle"/>
-        </service>
-
         <!-- Services -->
-        <service id="XrplConnector\Service\XrplPaymentTransactionService">
-            <argument type="service" id="xrpl_transaction.repository" />
+        <service id="XrplConnector\Service\OrderTransactionService">
+            <argument type="service" id="order.repository" />
         </service>
 
-        <service id="XrplConnector\Service\XrplTransactionSyncService">
+        <service id="XrplConnector\Service\XrplClientService">
+        </service>
+
+        <service id="XrplConnector\Service\XrplTxService">
             <argument type="service" id="Doctrine\DBAL\Connection" />
         </service>
 
