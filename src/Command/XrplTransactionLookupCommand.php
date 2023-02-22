@@ -13,7 +13,7 @@ class XrplTransactionLookupCommand extends Command
 {
     protected static $defaultName = 'xrpl:transaction:lookup';
 
-    protected XrplTxService $syncService;
+    protected XrplTxService $txService;
 
     protected XrplTransactionFileService $fileService;
 
@@ -24,16 +24,17 @@ class XrplTransactionLookupCommand extends Command
         parent::__construct();
 
         $this->txService = $txService;
-        $this->fileService = $fileService;
     }
 
     public function configure()
     {
         parent::configure();
 
-        $this->setDescription('XRP transaction lookup');
+        $this->setDescription('XRPL transaction lookup');
         $this->addOption('hash', null, InputOption::VALUE_OPTIONAL, 'Hash identifying a tx');
         $this->addOption('ctid', null, InputOption::VALUE_OPTIONAL, 'CTID identifying a validated tx');
+        $this->addOption('source', null, InputOption::VALUE_OPTIONAL, 'Tx source - XRPL, DB or BOTH');
+        $this->addOption('write', null, InputOption::VALUE_OPTIONAL, 'Write result to file system');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -42,10 +43,16 @@ class XrplTransactionLookupCommand extends Command
         $ctid  = $input->getOption('ctid');
 
         if ($hash xor $ctid) {
-            $output->writeln('hash: ' . $hash);
-            $output->writeln('ctid: ' . $ctid);
 
-            //$this->fileService->saveAccountTxResult($res);
+            $source = $input->getOption('source');
+
+            if ($source === 'XRPL' or $source === 'BOTH') {
+
+            }
+
+            if ($source === 'DB' or $source === 'BOTH') {
+
+            }
 
             return Command::SUCCESS;
         }

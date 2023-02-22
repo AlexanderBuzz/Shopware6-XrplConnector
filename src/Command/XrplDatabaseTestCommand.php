@@ -28,13 +28,15 @@ class XrplDatabaseTestCommand extends Command
     {
         parent::configure();
 
-        $this->setDescription('XRP transaction lookup');
+        $this->setDescription('Test command - will be removed for LedgerDirect');
         $this->addOption('address', null, InputOption::VALUE_REQUIRED, 'XRPL Address to check for incoming transactions');
         $this->addOption('force', null, InputOption::VALUE_OPTIONAL, 'Truncate table upfront');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $output->writeln('Test command - will be removed for LedgerDirect');
+
         $address = $input->getOption('address');
 
         if ($input->hasOption('force')) {

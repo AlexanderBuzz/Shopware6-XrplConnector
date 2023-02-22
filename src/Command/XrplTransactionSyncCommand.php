@@ -15,16 +15,11 @@ class XrplTransactionSyncCommand extends Command
 
     protected XrplTxService $txService;
 
-    private Connection $connection;
-
-    public function __construct(
-        XrplTxService $txService,
-        Connection $connection
-    ) {
+    public function __construct(XrplTxService $txService)
+    {
         parent::__construct();
 
         $this->txService = $txService;
-        $this->connection = $connection;
     }
 
     public function configure()
@@ -32,16 +27,20 @@ class XrplTransactionSyncCommand extends Command
         parent::configure();
 
         $this->setDescription('XRPL tx sync');
-        $this->addOption('account', null, InputOption::VALUE_OPTIONAL, 'account');
+        $this->addOption('address', null, InputOption::VALUE_REQUIRED, 'XRPL Address to check for incoming transactions');
+        $this->addOption('force', null, InputOption::VALUE_OPTIONAL, 'Truncate table upfront');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        // Add DB service instead of connection
+        $address = $input->getOption('address');
 
-        // get account from config or from CLI params
-        // fetch account tx
-        // on success write to DB
-         return Command::SUCCESS;
+        if ($input->hasOption('force')) {
+            $this->txService->resetDatabase();
+        }
+
+        $this->txService->syncTransactions($address);
+
+        return Command::SUCCESS;
     }
 }
