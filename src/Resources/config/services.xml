@@ -22,7 +22,6 @@
 
         <service id="XrplConnector\Command\XrplTransactionSyncCommand">
             <argument type="service" id="XrplConnector\Service\XrplTxService"/>
-            <argument type="service" id="Doctrine\DBAL\Connection" />
 
             <tag name="console.command"/>
         </service>
