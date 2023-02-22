@@ -13,10 +13,13 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 use XrplConnector\Provider\CryptoPriceProviderInterface;
-use XrplConnector\Service\XrplPaymentTransactionService;
 
 class XrpPaymentHandler implements AsynchronousPaymentHandlerInterface
 {
+    public const DESTINATION_TAG_RANGE_MIN = 10000;
+
+    public const DESTINATION_TAG_RANGE_MAX = 1000000000;
+
     private RouterInterface $router;
 
     private OrderTransactionStateHandler $transactionStateHandler;
@@ -88,20 +91,29 @@ class XrpPaymentHandler implements AsynchronousPaymentHandlerInterface
 
     public function finalize(AsyncPaymentTransactionStruct $transaction, Request $request, SalesChannelContext $salesChannelContext): void
     {
-        $paymentState = $request->query->getAlpha('status');
-        $context = $salesChannelContext->getContext();
-        if ($paymentState === 'completed') {
+        $orderTransaction = $transaction->getOrderTransaction();
+        $customFields = $orderTransaction->getCustomFields();
+
+        if (isset($customFields['xrpl']['hash']) && isset($customFields['xrpl']['ctid'])) {
             // Payment completed, set transaction status to "paid"
-            $this->transactionStateHandler->paid($transaction->getOrderTransaction()->getId(), $context);
+            $this->transactionStateHandler->paid($transaction->getOrderTransaction()->getId(), $salesChannelContext->getContext());
         } else {
             // Payment not completed, set transaction status to "open"
-            $this->transactionStateHandler->reopen($transaction->getOrderTransaction()->getId(), $context);
+            $this->transactionStateHandler->reopen($transaction->getOrderTransaction()->getId(), $salesChannelContext->getContext());
         }
     }
 
     private function generateDestinationTag(): int
     {
-        // TODO: Generate int without collision
-        return 10123;
+        // https://xrpl.org/source-and-destination-tags.html
+        // https://xrpl.org/require-destination-tags.html
+
+        // TODO: Require DestinationTags - security option, default setting "on"
+
+        // TODO for the far future: Having process in place for when DestinationTags run out for a single account
+
+        // TODO: Avoid collisions and
+
+        return random_int(self::DESTINATION_TAG_RANGE_MIN, self::DESTINATION_TAG_RANGE_MAX);
     }
 }

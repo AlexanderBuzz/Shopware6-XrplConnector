@@ -37,7 +37,7 @@ class XrpPaymentController extends StorefrontController
      */
     public function payment(SalesChannelContext $context, string $orderId, Request $request)
     {
-        $order = $this->orderTransactionService->getOrderById($orderId, $context->getContext());
+        $order = $this->orderTransactionService->getOrderWithTransactions($orderId, $context->getContext());
 
         $orderTransaction = $order->getTransactions()->first();
         $customFields = $orderTransaction->getCustomFields();
@@ -65,22 +65,22 @@ class XrpPaymentController extends StorefrontController
      */
     public function checkPayment(SalesChannelContext $context,  string $orderId, Request $request): JsonResponse
     {
-        $order = $this->orderTransactionService->getOrderById($orderId, $context->getContext());
+        $order = $this->orderTransactionService->getOrderWithTransactions($orderId, $context->getContext());
 
         if ($order) {
             $orderTransaction = $order->getTransactions()->first();
             $customFields = $orderTransaction->getCustomFields();
 
             if (isset($customFields['xrpl'])) {
-                $destination = 'r9jEyy3nrB8D7uRc5w2k3tizKQ1q8cpeHU'; // TODO: Pull from config
-                $destinationTag = $customFields['xrpl']['destination_tag'];
-                $amount = $customFields['xrpl']['amount']; // TODO: Check für validity
+                $tx = $this->orderTransactionService->syncOrderTransactionWithXrpl($orderTransaction);
 
-                // Sync Tx'es
-                // Get Tx from Service
-                // If dest, tag and amount match, retzurn success
-
-                return new JsonResponse(['success' => true]);
+                if ($tx) {
+                    return new JsonResponse([
+                        'success' => true,
+                        'hash' => $tx['hash'],
+                        'ctid' => $tx['ctid']
+                    ]);
+                }
             }
         }
 

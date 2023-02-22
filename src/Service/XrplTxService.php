@@ -4,6 +4,7 @@ namespace XrplConnector\Service;
 
 use DateTime;
 use Doctrine\DBAL\Connection;
+use PDO;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -17,17 +18,45 @@ use XrplConnector\Entity\XrplTxEntity;
 
 class XrplTxService
 {
+    protected XrplClientService $clientService;
+
     private Connection $connection;
 
     public function __construct(
+        XrplClientService $clientService,
         Connection $connection
     ) {
+        $this->clientService = $clientService;
         $this->connection = $connection;
     }
 
-    public function findTransaction(string $destination, string $destinationTag, Context $context): array
+
+
+    public function findTransaction(string $destination, int $destinationTag): ?array
     {
-        return [];
+        $statement = $this->connection->executeQuery(
+            'SELECT * FROM xrpl_tx WHERE destination = :destination AND destination_tag = :destination_tag',
+            ['destination' => $destination, 'destination_tag' => $destinationTag],
+            ['destination' => PDO::PARAM_STR, 'destination_tag' => PDO::PARAM_INT]
+        );
+        $matches = $statement->fetchAllAssociative();
+
+        if (!empty($matches)) {
+            return $matches[0];
+        }
+
+        // TODO: If for whatever reason there are more than one matches, throw error
+
+        return null;
+    }
+
+    public function syncTransactions(string $address): void
+    {
+        $transactions = $this->clientService->fetchAccountTransactions($address);
+
+        if (count($transactions)) {
+            $this->txToDb($transactions, $address);
+        }
     }
 
     public function resetDatabase(): void

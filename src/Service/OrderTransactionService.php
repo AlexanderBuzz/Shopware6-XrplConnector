@@ -4,6 +4,7 @@ namespace XrplConnector\Service;
 
 use DateTime;
 use Doctrine\DBAL\Connection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -19,12 +20,17 @@ use XrplConnector\Entity\XrplTxEntity;
 class OrderTransactionService
 {
     private EntityRepository $orderRepository;
-    public function __construct(EntityRepository $orderRepository)
-    {
+
+    private XrplTxService $xrplSyncService;
+    public function __construct(
+        EntityRepository $orderRepository,
+        XrplTxService $xrplSyncService
+    ) {
         $this->orderRepository = $orderRepository;
+        $this->xrplSyncService = $xrplSyncService;
     }
 
-    public function getOrderById(string $orderId, Context $context): ?OrderEntity
+    public function getOrderWithTransactions(string $orderId, Context $context): ?OrderEntity
     {
         $criteria = new Criteria([$orderId]);
         $criteria->addAssociation('transactions');
@@ -34,5 +40,32 @@ class OrderTransactionService
             $criteria,
             $context
         )->first();
+    }
+
+    public function syncOrderTransactionWithXrpl(OrderTransactionEntity $orderTransaction): ?array
+    {
+        $customFields = $orderTransaction->getCustomFields();
+        if (isset($customFields['xrpl']['destination']) && isset($customFields['xrpl']['destination_tag'])) {
+
+            // TODO: Exception when orderTransaction.customFields are different form xrpl_tx
+
+            $tx = $this->xrplSyncService->findTransaction(
+                $customFields['xrpl']['destination'],
+                (int) $customFields['xrpl']['destination_tag']
+            );
+
+            if ($tx) {
+                return $tx;
+            }
+
+            $this->xrplSyncService->syncTransactions($customFields['xrpl']['destination']);
+
+            return $this->xrplSyncService->findTransaction(
+                $customFields['xrpl']['destination'],
+                (int) $customFields['xrpl']['destination_tag']
+            );
+        }
+
+        return null;
     }
 }

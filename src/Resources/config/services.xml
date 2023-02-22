@@ -28,9 +28,7 @@
         </service>
 
         <service id="XrplConnector\Command\XrplDatabaseTestCommand">
-            <argument type="service" id="XrplConnector\Service\XrplClientService"/>
             <argument type="service" id="XrplConnector\Service\XrplTxService"/>
-            <argument type="service" id="Doctrine\DBAL\Connection" />
 
             <tag name="console.command"/>
         </service>
@@ -69,12 +67,14 @@
         <!-- Services -->
         <service id="XrplConnector\Service\OrderTransactionService">
             <argument type="service" id="order.repository" />
+            <argument type="service" id="XrplConnector\Service\XrplTxService"/>
         </service>
 
         <service id="XrplConnector\Service\XrplClientService">
         </service>
 
         <service id="XrplConnector\Service\XrplTxService">
+            <argument type="service" id="XrplConnector\Service\XrplClientService"/>
             <argument type="service" id="Doctrine\DBAL\Connection" />
         </service>
 

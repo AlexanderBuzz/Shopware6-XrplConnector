@@ -15,20 +15,13 @@ class XrplDatabaseTestCommand extends Command
 {
     protected static $defaultName = 'xrpl:database:test';
 
-    protected XrplClientService $clientService;
     protected XrplTxService $txService;
 
-    private Connection $connection;
-
-    public function __construct(
-        XrplTxService $txService,
-        Connection                 $connection
-    )
+    public function __construct(XrplTxService $txService)
     {
         parent::__construct();
 
         $this->txService = $txService;
-        $this->connection = $connection;
     }
 
     public function configure()
@@ -48,11 +41,7 @@ class XrplDatabaseTestCommand extends Command
             $this->txService->resetDatabase();
         }
 
-        $transactions = $this->clientService->fetchAccountTransactions($address);
-
-        if (count($transactions)) {
-            $this->txService->txToDb($transactions, $address);
-        }
+        $this->txService->syncTransactions($address);
 
         return Command::SUCCESS;
     }
