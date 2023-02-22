@@ -72,7 +72,7 @@ class XrpPaymentController extends StorefrontController
             $customFields = $orderTransaction->getCustomFields();
 
             if (isset($customFields['xrpl'])) {
-                $tx = $this->orderTransactionService->syncOrderTransactionWithXrpl($orderTransaction);
+                $tx = $this->orderTransactionService->syncOrderTransactionWithXrpl($orderTransaction, $context->getContext());
 
                 if ($tx) {
                     return new JsonResponse([

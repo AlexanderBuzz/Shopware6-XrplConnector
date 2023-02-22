@@ -18,6 +18,10 @@ use XrplConnector\Entity\XrplTxEntity;
 
 class XrplTxService
 {
+    public const DESTINATION_TAG_RANGE_MIN = 10000;
+
+    public const DESTINATION_TAG_RANGE_MAX = 1000000000;
+
     protected XrplClientService $clientService;
 
     private Connection $connection;
@@ -30,7 +34,19 @@ class XrplTxService
         $this->connection = $connection;
     }
 
+    public function generateDestinationTag(): int
+    {
+        // https://xrpl.org/source-and-destination-tags.html
+        // https://xrpl.org/require-destination-tags.html
 
+        // TODO: Require DestinationTags - security option, default setting "on"
+
+        // TODO for the far future: Having process in place for when DestinationTags run out for a single account
+
+        // TODO: Avoid collisions and
+
+        return random_int(self::DESTINATION_TAG_RANGE_MIN, self::DESTINATION_TAG_RANGE_MAX);
+    }
 
     public function findTransaction(string $destination, int $destinationTag): ?array
     {
@@ -52,11 +68,15 @@ class XrplTxService
 
     public function syncTransactions(string $address): void
     {
+        // TODO: Use only last ledger index
+
         $transactions = $this->clientService->fetchAccountTransactions($address);
 
         if (count($transactions)) {
             $this->txToDb($transactions, $address);
         }
+
+        // TODO: If marker is present, loop
     }
 
     public function resetDatabase(): void

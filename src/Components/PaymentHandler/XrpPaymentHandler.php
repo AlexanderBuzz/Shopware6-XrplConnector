@@ -13,33 +13,25 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 use XrplConnector\Provider\CryptoPriceProviderInterface;
+use XrplConnector\Service\OrderTransactionService;
 
 class XrpPaymentHandler implements AsynchronousPaymentHandlerInterface
 {
-    public const DESTINATION_TAG_RANGE_MIN = 10000;
-
-    public const DESTINATION_TAG_RANGE_MAX = 1000000000;
-
     private RouterInterface $router;
 
     private OrderTransactionStateHandler $transactionStateHandler;
 
-    private EntityRepository $transactionRepository;
-
-    private CryptoPriceProviderInterface $priceProvider;
+    private OrderTransactionService $transactionService;
 
     public function __construct(
         RouterInterface              $router,
         OrderTransactionStateHandler $orderTransactionStateHandler,
-        EntityRepository             $transactionRepository,
-        CryptoPriceProviderInterface $priceProvider
-        //XrpltxService $txService
+        OrderTransactionService      $transactionService
     )
     {
         $this->router = $router;
         $this->transactionStateHandler = $orderTransactionStateHandler;
-        $this->transactionRepository = $transactionRepository;
-        $this->priceProvider = $priceProvider;
+        $this->transactionService = $transactionService;
     }
 
     // https://developer.shopware.com/docs/guides/plugins/plugins/checkout/payment/add-payment-plugin
@@ -52,34 +44,11 @@ class XrpPaymentHandler implements AsynchronousPaymentHandlerInterface
      */
     public function pay(AsyncPaymentTransactionStruct $transaction, RequestDataBag $dataBag, SalesChannelContext $salesChannelContext): RedirectResponse
     {
-        $orderTransaction = $transaction->getOrderTransaction();
-        $existingCustomFields = $orderTransaction->getCustomFields() ?? [];
-
-        $destination = 'r9jEyy3nrB8D7uRc5w2k3tizKQ1q8cpeHU'; // TODO: From config
-        $destinationTag = $this->generateDestinationTag();
-        $order = $transaction->getOrder();
-        $xrpAmount = $this->priceProvider->getCurrentPriceForOrder($order, $salesChannelContext->getContext());
-
-        // TODO: Validate XRP amount
-
-        $customFields = [
-            'xrpl' => [
-                'type' => 'xrp-payment',
-                'destination' => $destination,
-                'destination_tag' => $destinationTag, // TODO: Use consistent naming or use separate service
-                'amount' => $xrpAmount
-            ]
-        ];
-
-        //In case that the cache kicks in update the current struct either to avoid any misbehavior when working with custom fields in later steps.
-        $transaction->getOrderTransaction()->setCustomFields(array_merge($existingCustomFields, $customFields));
-
-        $this->transactionRepository->upsert([
-            [
-                'id' => $orderTransaction->getId(),
-                'customFields' => $customFields,
-            ],
-        ], $salesChannelContext->getContext());
+        $this->transactionService->prepareOrderTransactionForXrpl(
+            $transaction->getOrder(),
+            $transaction->getOrderTransaction(),
+            $salesChannelContext->getContext()
+        );
 
         $redirectUrl = $this->router->generate('frontend.checkout.xrpl-connector.payment', [
             'orderId' => $transaction->getOrder()->getId(),
@@ -101,19 +70,5 @@ class XrpPaymentHandler implements AsynchronousPaymentHandlerInterface
             // Payment not completed, set transaction status to "open"
             $this->transactionStateHandler->reopen($transaction->getOrderTransaction()->getId(), $salesChannelContext->getContext());
         }
-    }
-
-    private function generateDestinationTag(): int
-    {
-        // https://xrpl.org/source-and-destination-tags.html
-        // https://xrpl.org/require-destination-tags.html
-
-        // TODO: Require DestinationTags - security option, default setting "on"
-
-        // TODO for the far future: Having process in place for when DestinationTags run out for a single account
-
-        // TODO: Avoid collisions and
-
-        return random_int(self::DESTINATION_TAG_RANGE_MIN, self::DESTINATION_TAG_RANGE_MAX);
     }
 }

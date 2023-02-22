@@ -25,8 +25,10 @@ class Migration1667583695XrplTx extends MigrationStep
                 `destination_tag`   INT(11) DEFAULT NULL,
                 `date`              INT(11) NOT NULL,
                 `meta`              TEXT NOT NULL,
-                `tx`                TEXT NOT NULL
-            )
+                `tx`                TEXT NOT NULL,
+                
+                PRIMARY KEY (`id`)
+            )  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
     }
 

@@ -51,8 +51,7 @@
         <service id="XrplConnector\Components\PaymentHandler\XrpPaymentHandler">
             <argument type="service" id="router"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
-            <argument type="service" id="order_transaction.repository"/>
-            <argument type="service" id="XrplConnector\Provider\XrpPriceProvider" />
+            <argument type="service" id="XrplConnector\Service\OrderTransactionService"/>
 
             <tag name="shopware.payment.method.async"/>
         </service>
@@ -67,7 +66,9 @@
         <!-- Services -->
         <service id="XrplConnector\Service\OrderTransactionService">
             <argument type="service" id="order.repository" />
+            <argument type="service" id="order_transaction.repository" />
             <argument type="service" id="XrplConnector\Service\XrplTxService"/>
+            <argument type="service" id="XrplConnector\Provider\XrpPriceProvider" />
         </service>
 
         <service id="XrplConnector\Service\XrplClientService">
