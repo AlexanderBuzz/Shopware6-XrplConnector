@@ -20,7 +20,7 @@ class XrplTxService
 {
     public const DESTINATION_TAG_RANGE_MIN = 10000;
 
-    public const DESTINATION_TAG_RANGE_MAX = 1000000000;
+    public const DESTINATION_TAG_RANGE_MAX = 2140000000;
 
     protected XrplClientService $clientService;
 
@@ -39,13 +39,22 @@ class XrplTxService
         // https://xrpl.org/source-and-destination-tags.html
         // https://xrpl.org/require-destination-tags.html
 
-        // TODO: Require DestinationTags - security option, default setting "on"
+        while (true) {
+            $destinationTag = random_int(self::DESTINATION_TAG_RANGE_MIN, self::DESTINATION_TAG_RANGE_MAX);
 
-        // TODO for the far future: Having process in place for when DestinationTags run out for a single account
+            $statement = $this->connection->executeQuery(
+                'SELECT destination_tag FROM xrpl_destination_tag WHERE destination_tag = :destination_tag',
+                ['destination_tag' => $destinationTag],
+                ['destination_tag' => PDO::PARAM_INT]
+            );
+            $matches = $statement->fetchAllAssociative();
 
-        // TODO: Avoid collisions and
+            if (empty($matches)) {
+                $this->connection->insert('xrpl_destination_tag', ['destination_tag' => $destinationTag]);
 
-        return random_int(self::DESTINATION_TAG_RANGE_MIN, self::DESTINATION_TAG_RANGE_MAX);
+                return $destinationTag;
+            }
+        }
     }
 
     public function findTransaction(string $destination, int $destinationTag): ?array
