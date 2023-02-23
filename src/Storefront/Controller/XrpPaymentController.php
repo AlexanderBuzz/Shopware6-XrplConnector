@@ -2,13 +2,10 @@
 
 namespace XrplConnector\Storefront\Controller;
 
-use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -41,15 +38,26 @@ class XrpPaymentController extends StorefrontController
      */
     public function payment(SalesChannelContext $context, string $orderId, Request $request)
     {
-        $order = $this->orderTransactionService->getOrderWithTransactions($orderId, $context->getContext());
+        //TODO: Check if orderTransaction ist still valid
 
+        $order = $this->orderTransactionService->getOrderWithTransactions($orderId, $context->getContext());
         $orderTransaction = $order->getTransactions()->first();
-        $customFields = $orderTransaction->getCustomFields();
-        $destinationTag = $customFields['xrpl']['destination_tag']; // TODO: Use consistent naming or use separate service
 
         $returnUrl = $request->get('returnUrl');
 
-        $totalXrpAmount = $this->priceProvider->getCurrentPriceForOrder($order, $context->getContext());
+        $tx = $this->orderTransactionService->syncOrderTransactionWithXrpl($orderTransaction, $context->getContext());
+        if ($tx) {
+            return new RedirectResponse($request->get('returnUrl'));
+        }
+
+        $customFields = $orderTransaction->getCustomFields();
+        if (!isset($customFields['xrpl'])) {
+            // TODO: Throw new Exception, this TA cannot be paid in XRP
+        }
+
+        $destinationTag = $customFields['xrpl']['destination_tag'];
+
+        $currentXrpAmount = $this->priceProvider->getCurrentPriceForOrder($order, $context->getContext());
 
         // https://goqr.me/api/doc/create-qr-code/
 
@@ -60,7 +68,7 @@ class XrpPaymentController extends StorefrontController
             'orderNumber' => $order->getOrderNumber(),
             'returnUrl' => $returnUrl,
             'showNoTransactionFoundError' => true,
-            'xrpAmount' => $totalXrpAmount
+            'xrpAmount' => $currentXrpAmount
         ]);
     }
 

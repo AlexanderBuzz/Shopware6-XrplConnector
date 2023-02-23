@@ -1,7 +1,7 @@
 {% sw_extends '@Storefront/storefront/base.html.twig' %}
 
 {% block base_body_inner %}
-    <div class="bg-white border p-3" data-xrp-payment="true">
+    <div class="bg-white border p-3" data-xrp-payment-page="true">
         <strong class="text-center d-block border-bottom pb-2 mb-3">Pay now</strong>
         Send your payment of <strong>{{ xrpAmount|round(6) }} XRP</strong> to the following address:<br/>
         <br/>
@@ -34,10 +34,12 @@
 
         <form method="POST">
             <input type="hidden" name="orderId" value="{{ orderId }}" />
-            <input type="hidden" name="check" value="1" />
             {{ sw_csrf('frontend.checkout.xrpl-connector.payment') }}
-            <button type="submit" class="btn btn-success float-right">
-                Paid? Click here to check payment status
+            <button type="submit"
+                    class="btn btn-success float-right"
+                    id="check-payment-buttonx
+                    data-order-id="{{ orderId }}>
+                Check payment status
             </button>
         </form>
     </div>

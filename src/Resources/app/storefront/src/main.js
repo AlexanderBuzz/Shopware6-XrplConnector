@@ -12,9 +12,10 @@ class XrpPayment  extends Plugin {
         this.client = new HttpClient();
 
         this.checkPaymentButton = DomAccess.querySelector(document, '#check-payment-button');
-
         this.checkPaymentButton.onclick = this._fetchPaymentData.bind(this);
-        window.checkPaymentButton  = this.checkPaymentButton;
+
+        this.checkPaymentButton = DomAccess.querySelector(document, '#check-payment-button');
+        this.checkPaymentButton.onclick = this._fetchPaymentData.bind(this);
 
         //process.env.NODE_ENV
     }
@@ -29,12 +30,16 @@ class XrpPayment  extends Plugin {
     }
 
     _handlePaymentData(data) {
-        console.log(JSON.parse(data).success);
+        const result = JSON.parse(data);
+        if(result.success) {
+
+        }
+
     }
 }
 
 PluginManager.register(
     'XrpPayment',
     XrpPayment,
-    '[data-xrp-payment]'
+    '[data-xrp-payment-page]'
 );
