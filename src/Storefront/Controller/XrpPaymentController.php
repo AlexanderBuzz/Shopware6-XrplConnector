@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use XrplConnector\Provider\CryptoPriceProviderInterface;
+use XrplConnector\Service\ConfigurationService;
 use XrplConnector\Service\OrderTransactionService;
 
 /**
@@ -20,14 +21,17 @@ use XrplConnector\Service\OrderTransactionService;
  */
 class XrpPaymentController extends StorefrontController
 {
+    private ConfigurationService $configurationService;
     private CryptoPriceProviderInterface $priceProvider;
 
     private OrderTransactionService $orderTransactionService;
 
     public function __construct(
+        ConfigurationService $configurationService,
         CryptoPriceProviderInterface $priceProvider,
         OrderTransactionService $orderTransactionService
     ) {
+        $this->configurationService = $configurationService;
         $this->priceProvider = $priceProvider;
         $this->orderTransactionService = $orderTransactionService;
     }
@@ -50,7 +54,7 @@ class XrpPaymentController extends StorefrontController
         // https://goqr.me/api/doc/create-qr-code/
 
         return $this->renderStorefront('@Storefront/storefront/xrpl-connector/payment.html.twig', [
-            'destinationAccount' => 'r9jEyy3nrB8D7uRc5w2k3tizKQ1q8cpeHU',
+            'destinationAccount' => $this->configurationService->getDestinationAccount(),
             'destinationTag' => $destinationTag,
             'orderId' => $orderId,
             'orderNumber' => $order->getOrderNumber(),

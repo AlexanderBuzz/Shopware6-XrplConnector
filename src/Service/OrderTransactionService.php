@@ -20,6 +20,8 @@ use XrplConnector\Provider\CryptoPriceProviderInterface;
 
 class OrderTransactionService
 {
+    private ConfigurationService $configurationService;
+
     private EntityRepository $orderRepository;
 
 
@@ -30,12 +32,14 @@ class OrderTransactionService
     private CryptoPriceProviderInterface $priceProvider;
 
     public function __construct(
+        ConfigurationService $configurationService,
         EntityRepository $orderRepository,
         EntityRepository $orderTransactionRepository,
         XrplTxService    $xrplSyncService,
         CryptoPriceProviderInterface $priceProvider
     )
     {
+        $this->configurationService = $configurationService;
         $this->orderRepository = $orderRepository;
         $this->orderTransactionRepository = $orderTransactionRepository;
         $this->xrplSyncService = $xrplSyncService;
@@ -60,7 +64,7 @@ class OrderTransactionService
         Context $context
     ): void
     {
-        $destination = 'r9jEyy3nrB8D7uRc5w2k3tizKQ1q8cpeHU'; // TODO: From config
+        $destination = $this->configurationService->getDestinationAccount();
         $destinationTag = $this->xrplSyncService->generateDestinationTag();
         $xrpAmount = $this->priceProvider->getCurrentPriceForOrder($order, $context);
 

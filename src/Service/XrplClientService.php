@@ -23,9 +23,9 @@ class XrplClientService
         $this->_initClient();
     }
 
-    public function fetchAccountTransactions(string $address): array
+    public function fetchAccountTransactions(string $address, ?int $lastLedgerIndex): array
     {
-        $req = new AccountTxRequest($address);
+        $req = new AccountTxRequest($address, $lastLedgerIndex);
         $res = $this->client->syncRequest($req);
 
         return $res->getResult()['transactions'];

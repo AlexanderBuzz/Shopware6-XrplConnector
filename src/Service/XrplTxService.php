@@ -79,6 +79,8 @@ class XrplTxService
     {
         // TODO: Use only last ledger index
 
+        $lastLedgerIndex = $this->connection->fetchOne('SELECT MAX(ledger_index) FROM xrpl_tx', [1], 0) ?? null;
+
         $transactions = $this->clientService->fetchAccountTransactions($address);
 
         if (count($transactions)) {
