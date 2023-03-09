@@ -12,14 +12,19 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use XRPL_PHP\Client\JsonRpcClient;
+use XRPL_PHP\Core\Networks;
 use XRPL_PHP\Models\Account\AccountTxRequest;
 use XrplConnector\Entity\XrplTxEntity;
 
 class XrplClientService
 {
+    private ConfigurationService $configurationService;
+
     private JsonRpcClient $client;
 
-    public function __construct() {
+    public function __construct(ConfigurationService $configurationService) {
+        $this->configurationService = $configurationService;
+
         $this->_initClient();
     }
 
@@ -29,6 +34,15 @@ class XrplClientService
         $res = $this->client->syncRequest($req);
 
         return $res->getResult()['transactions'];
+    }
+
+    public function getNetwork(): array
+    {
+        if(!$this->configurationService->isTest()) {
+            return Networks::getNetwork('mainnet');
+        }
+
+        return Networks::getNetwork('testnet');
     }
 
     /*
@@ -48,7 +62,7 @@ class XrplClientService
 
     private function _initClient()
     {
-        $net = 'https://s.altnet.rippletest.net:51234'; // TODO: Pull from const, switch config
-        $this->client = new JsonRpcClient($net);
+        $jsonRpcUrl = $this->getNetwork()['jsonRpcUrl'];
+        $this->client = new JsonRpcClient($jsonRpcUrl);
     }
 }

@@ -2,22 +2,8 @@
 
 namespace XrplConnector\Service;
 
-use DateTime;
-use Doctrine\DBAL\Connection;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
-use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
-use Shopware\Core\Framework\Uuid\Uuid;
+use XRPL_PHP\Core\Networks;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use XRPL_PHP\Client\JsonRpcClient;
-use XRPL_PHP\Models\Account\AccountTxRequest;
-use XrplConnector\Entity\XrplTxEntity;
-use XrplConnector\Provider\CryptoPriceProviderInterface;
 
 class ConfigurationService
 {
@@ -35,11 +21,6 @@ class ConfigurationService
     {
         return true;
     }
-
-   public function getNetwork(): int
-   {
-        return self::DUMMY_NETWORK_ID;
-   }
 
    public function getDestinationAccount(): string
    {

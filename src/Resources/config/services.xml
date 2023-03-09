@@ -43,6 +43,7 @@
             <argument type="service" id="XrplConnector\Service\ConfigurationService" />
             <argument type="service" id="XrplConnector\Provider\XrpPriceProvider" />
             <argument type="service" id="XrplConnector\Service\OrderTransactionService" />
+            <argument type="service" id="XrplConnector\Core\Content\Xrpl\SalesChannel\PaymentRoute" />
 
             <call method="setContainer">
                 <argument type="service" id="service_container" />
@@ -65,6 +66,11 @@
             <argument type="service" id="currency.repository" />
         </service>
 
+        <!-- Routes -->
+        <service id="XrplConnector\Core\Content\Xrpl\SalesChannel\PaymentRoute" public="true">
+            <argument type="service" id="XrplConnector\Service\OrderTransactionService"/>
+        </service>
+
         <!-- Services -->
         <service id="XrplConnector\Service\ConfigurationService">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
@@ -79,6 +85,7 @@
         </service>
 
         <service id="XrplConnector\Service\XrplClientService">
+            <argument type="service" id="XrplConnector\Service\ConfigurationService" />
         </service>
 
         <service id="XrplConnector\Service\XrplTxService">

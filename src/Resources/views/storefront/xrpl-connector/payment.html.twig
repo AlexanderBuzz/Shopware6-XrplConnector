@@ -26,18 +26,20 @@
             No transaction found yet. Try again in a few seconds! <br />
         {% endif %}
 
+        <!--
         <button type="submit" class="btn btn-success float-left"
                 id="check-payment-button"
                 data-order-id="{{ orderId }}">
-            chck
+            Check Payment
         </button>
+        -->
 
         <form method="POST">
             <input type="hidden" name="orderId" value="{{ orderId }}" />
             {{ sw_csrf('frontend.checkout.xrpl-connector.payment') }}
             <button type="submit"
                     class="btn btn-success float-right"
-                    id="check-payment-buttonx
+                    id="check-payment-button
                     data-order-id="{{ orderId }}>
                 Check payment status
             </button>

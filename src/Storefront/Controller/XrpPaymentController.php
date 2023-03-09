@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use XrplConnector\Core\Content\Xrpl\SalesChannel\PaymentRoute;
+use XrplConnector\Core\Content\Xrpl\SalesChannel\PaymentRouteResponse;
 use XrplConnector\Provider\CryptoPriceProviderInterface;
 use XrplConnector\Service\ConfigurationService;
 use XrplConnector\Service\OrderTransactionService;
@@ -19,22 +21,27 @@ use XrplConnector\Service\OrderTransactionService;
 class XrpPaymentController extends StorefrontController
 {
     private ConfigurationService $configurationService;
+
     private CryptoPriceProviderInterface $priceProvider;
 
     private OrderTransactionService $orderTransactionService;
 
+    private PaymentRoute $paymentRoute;
+
     public function __construct(
         ConfigurationService $configurationService,
         CryptoPriceProviderInterface $priceProvider,
-        OrderTransactionService $orderTransactionService
+        OrderTransactionService $orderTransactionService,
+        PaymentRoute $paymentRoute
     ) {
         $this->configurationService = $configurationService;
         $this->priceProvider = $priceProvider;
         $this->orderTransactionService = $orderTransactionService;
+        $this->paymentRoute = $paymentRoute;
     }
 
     /**
-     * @Route("/xrpl-connector/payment/{orderId}", name="frontend.checkout.xrpl-connector.payment", options={"seo"="false"}, methods={"GET", "POST"})
+     * @Route("/xrpl-connector/payment/{orderId}", name="frontend.checkout.xrpl-connector.payment", methods={"GET", "POST"}, options={"seo"="false"})
      */
     public function payment(SalesChannelContext $context, string $orderId, Request $request)
     {
@@ -73,30 +80,11 @@ class XrpPaymentController extends StorefrontController
     }
 
     /**
-     * @Route("/xrpl-connector/check-payment/{orderId}", name="frontend.checkout.xrpl-connector.check-payment", defaults={"XmlHttpRequest"=true}, methods={"GET", "POST"})
+     * @Route("/xrpl-connector/payment/check/{orderId}", name="frontend.checkout.xrpl-connector.check-payment", methods={"GET", "POST"}, defaults={"XmlHttpRequest"=true})
      */
-    public function checkPayment(SalesChannelContext $context,  string $orderId, Request $request): JsonResponse
+    public function checkPayment(SalesChannelContext $context,  string $orderId, Request $request): Response
     {
-        $order = $this->orderTransactionService->getOrderWithTransactions($orderId, $context->getContext());
-
-        if ($order) {
-            $orderTransaction = $order->getTransactions()->first();
-            $customFields = $orderTransaction->getCustomFields();
-
-            if (isset($customFields['xrpl'])) {
-                $tx = $this->orderTransactionService->syncOrderTransactionWithXrpl($orderTransaction, $context->getContext());
-
-                if ($tx) {
-                    return new JsonResponse([
-                        'success' => true,
-                        'hash' => $tx['hash'],
-                        'ctid' => $tx['ctid']
-                    ]);
-                }
-            }
-        }
-
-        return new JsonResponse(['success' => false]);
+        return $this->paymentRoute->check($orderId, $context);
     }
 
 }
