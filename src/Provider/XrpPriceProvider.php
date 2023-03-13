@@ -2,16 +2,17 @@
 
 namespace XrplConnector\Provider;
 
+use Exception;
 use GuzzleHttp\Client;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\System\CustomEntity\Xml\Entity;
+use XrplConnector\Provider\Oracle\BinanceOracle;
 
 class XrpPriceProvider implements CryptoPriceProviderInterface
 {
-    const SYMBOL = 'XRPUSDT';
+    private const CRYPTO_CODE = 'XRP';
 
     private Client $client;
 
@@ -29,25 +30,46 @@ class XrpPriceProvider implements CryptoPriceProviderInterface
         $this->currencyRepository = $currencyRepository;
     }
 
-    public function getCurrentPrice(?string $iso = self::SYMBOL): float
+    /**
+     * Gets the current XRP price by querying averaging multiple oracles
+     *
+     * @param string $code
+     * @return float
+     */
+    public function getCurrentExchangeRate(string $code): float
     {
-        $response = $this->client->get('https://api.binance.com/api/v1/ticker/price?symbol=' . self::SYMBOL);
-        $data = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        $oracle = new BinanceOracle();
 
-        if (array_key_exists('price', $data)) {
-            return (float) $data['price'];
+        try {
+            return $oracle->prepare($this->client)->getCurrentPriceForPair(self::CRYPTO_CODE, $code);
+        } catch (Exception $exception) {
+            // TODO: Log error
         }
 
         return 0;
     }
 
+    /**
+     * @param OrderEntity $order
+     * @param Context $context
+     * @return float
+     * @throws Exception
+     */
     public function getCurrentPriceForOrder(OrderEntity $order, Context $context): float
     {
         $amountTotal = $order->getAmountTotal();
-
         $currency = $this->currencyRepository->search(new Criteria([$order->getCurrencyId()]), $context)->first();
-        $xrpUnitPrice = $this->getCurrentPrice($currency->getIsoCode());
+        $xrpUnitPrice = $this->getCurrentExchangeRate($currency->getIsoCode());
+
+        if (!$this->checkPricePlausibility($xrpUnitPrice)) {
+            throw new Exception('XRP price could not be properly determined');
+        }
 
         return $amountTotal / $xrpUnitPrice;
+    }
+
+    public function checkPricePlausibility(float $price): bool
+    {
+        return true;
     }
 }

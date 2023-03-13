@@ -53,4 +53,24 @@ class PaymentRoute
 
         return new PaymentRouteResponse($response);
     }
+
+    /**
+     * @Route("/store-api/xrpl-connector/payment/price/{orderId}", name="store-api.xrpl-connector.payment.price", methods={"GET", "POST"})
+     */
+    public function price(string $orderId, SalesChannelContext $context): PaymentRouteResponse
+    {
+        return new PaymentRouteResponse(new ArrayStruct(['todo' => 'implement']));
+    }
+
+    /**
+     * @Route("/store-api/xrpl-connector/payment/quote/{orderId}", name="store-api.xrpl-connector.payment.quote", methods={"GET", "POST"})
+     */
+    public function quote(string $orderId, SalesChannelContext $context): PaymentRouteResponse
+    {
+        // Sum
+        $order = $this->orderTransactionService->getOrderWithTransactions($orderId, $context->getContext());
+
+
+        return new PaymentRouteResponse(new ArrayStruct(['todo' => 'implement']));
+    }
 }

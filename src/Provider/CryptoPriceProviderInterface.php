@@ -4,5 +4,7 @@ namespace XrplConnector\Provider;
 
 interface CryptoPriceProviderInterface
 {
-    public function getCurrentPrice(?string $iso = null): float;
+    public function getCurrentExchangeRate(string $code): float;
+
+    public function checkPricePlausibility(float $price): bool;
 }

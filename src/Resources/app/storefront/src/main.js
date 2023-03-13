@@ -12,10 +12,9 @@ class XrpPayment  extends Plugin {
         this.client = new HttpClient();
 
         this.checkPaymentButton = DomAccess.querySelector(document, '#check-payment-button');
-        this.checkPaymentButton.onclick = this._fetchPaymentData.bind(this);
 
-        this.checkPaymentButton = DomAccess.querySelector(document, '#check-payment-button');
-        this.checkPaymentButton.onclick = this._fetchPaymentData.bind(this);
+        //
+        //this._registerEvents()
 
         //process.env.NODE_ENV
     }

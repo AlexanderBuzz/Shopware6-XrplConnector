@@ -10,7 +10,7 @@
 {% block component_payment_method_image %}
     {% if paymentMethodIsXrp %}
         {% block page_checkout_confirm_payment_current_xrp_logo %}
-            <img src="{{ asset('bundles/xrplconnector/storefront/img/amazon_pay.svg') }}" id="xrplconnector-xrp-logo" alt="Xrp" title="Xrp">
+            <img src="{{ asset('bundles/xrplconnector/storefront/img/xrp_payment.svg') }}" id="xrplconnector-xrp-logo" alt="Xrp" title="Xrp">
         {% endblock %}
     {% else %}
         {{ parent() }}
@@ -21,8 +21,8 @@
     {{ parent() }}
 
     {% if paymentMethodIsXrp %}
-        <a id="xrplconnector-change-xrpcard-payment"
-           href="#"
+        <a id="xrplconnector-change-xrp-payment"
+           href="#test"
            title="{{ "XrplConnector.confirm.payment.changeXrpPaymentMethod"|trans|striptags }}">
             {{ "XrplConnector.confirm.payment.changeXrpPaymentMethod"|trans|striptags }}
         </a>
