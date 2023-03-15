@@ -1,4 +1,4 @@
-# XrplConnector Plugin [WIP - will deprecate and re-emerge as LedgerDirect Shopware6]
+# XrplConnector Plugin - deprectated - use [LedgerDirect Shopware6])(https://github.com/ledger-direct/ledger-direct-shopware6)
 
 XRPL connector plugin. Enables Shopware6 to receive payments in XRP.
 
